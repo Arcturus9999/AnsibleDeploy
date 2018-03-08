@@ -53,3 +53,41 @@
 - name: Install tomcat8
   apt: name=tomcat8 update_cache=yes state=latest
 
+- name: Install sql server
+  shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+
+- name: Add repo
+  shell: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+
+- name : Update & Install
+  shell: sudo apt-get update | sudo apt-get install -y mssql-server
+
+- name: Setup SQLSERVER
+  shell: sudo /opt/mssql/bin/mssql-conf setup
+
+- name: Ensure that the server is running
+  service:     name: “mssql-server”   state: started     enabled: yes
+  register: mssql-server_status
+
+- name: DEBUG
+- debug: msg="the echo was {{ mssql-server_status.stdout }}"
+
+- name: Copy database backup
+  template: src={{ item }}.j2 dest=/var/opt/mssql/data/{{ item }}
+  with_items:
+    - finaxslackbot.bak.j2
+
+- name: Retrieve finaxslackbot database  
+  shell: sqlcmd -S localhost -U SA -P F1n@xlab -Q "BACKUP LOG finaxslackbot TO DISK = N'/var/opt/mssql/data/finaxslackbot.bak' WITH NOFORMAT, NOINIT, NAME = N'finaxslackbot', NOSKIP, NOREWIND, NOUNLOAD, STATS = 5" 
+
+- name: SQL Tools
+  shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - | sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
+
+- name: Update 
+  shell: sudo apt-get update |sudo apt-get install -y mssql-tools unixodbc-dev
+
+- name: Export variables 
+  shell: echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile | echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+
+- name: Source
+  shell: source ~/.bashrc
