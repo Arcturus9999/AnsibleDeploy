@@ -3,33 +3,33 @@
 - name: Add JRE ppa
   apt_repository: repo=ppa:webupd8team/java state=present
 
-- name: Copy configuration file for dns
-  template: src={{ item }}.j2 dest=/etc/{{ item }}
-  with_items:
-    - resolv.conf
+#- name: Copy configuration file for dns
+#  template: src={{ item }}.j2 dest=/etc/{{ item }}
+#  with_items:
+#    - resolv.conf
 
-- name: Write empty iterfaces
-  shell: sudo nano interfaces
+#- name: Write empty iterfaces
+#  shell: sudo nano interfaces
 
-- name: Copy configuration file for network interface
-  template: src={{ item }}.j2 dest=/etc/networkd/{{ item }}
-  with_items:
-    - interfaces
+#- name: Copy configuration file for network interface
+#  template: src={{ item }}.j2 dest=/etc/networkd/{{ item }}
+#  with_items:
+#    - interfaces
 
 - name: Automatically select the Oracle License
-  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true |  debconf-set-selections
 
 - name: Get JRE
   shell: wget "http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java/jdk-7u80-linux-x64.tar.gz"
 
 - name: Move JRE
-  shell: sudo mv jdk-7u80-linux-x64.tar.gz /tmp/
+  shell: mv jdk-7u80-linux-x64.tar.gz /tmp/
 
 - name: Local Path 
-  shell: echo oracle-java7-installer oracle-java7-installer/local select /tmp | sudo /usr/bin/debconf-set-selections
+  shell: echo oracle-java7-installer oracle-java7-installer/local select /tmp |  /usr/bin/debconf-set-selections
 
 - name: Approve
-  shell: echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+  shell: echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true |  /usr/bin/debconf-set-selections
 
 - name: Install JRE
   apt: name=oracle-java7-installer update_cache=yes state=latest
@@ -54,16 +54,16 @@
   apt: name=tomcat8 update_cache=yes state=latest
 
 - name: Install sql server
-  shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+  shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc |  apt-key add -
 
 - name: Add repo
-  shell: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+  shell:  add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
 
 - name : Update & Install
-  shell: sudo apt-get update | sudo apt-get install -y mssql-server
+  shell:  apt-get update | sudo apt-get install -y mssql-server
 
 - name: Setup SQLSERVER
-  shell: sudo /opt/mssql/bin/mssql-conf setup
+  shell:  /opt/mssql/bin/mssql-conf setup
 
 #- name: Ensure that the server is running
 #  service:     name: “mssql-server”   state: started     enabled: yes
@@ -84,7 +84,7 @@
   shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - | sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
 
 - name: Update 
-  shell: sudo apt-get update |sudo apt-get install -y mssql-tools unixodbc-dev
+  shell:  apt-get update |sudo apt-get install -y mssql-tools unixodbc-dev
 
 - name: Export variables 
   shell: echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile | echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
