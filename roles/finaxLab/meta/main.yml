@@ -1,3 +1,1 @@
----
-dependencies:
-  - { role: oracle-java-8, java_versions: ["oracle-jdk7-installer"], sudo: yes }
+

@@ -65,12 +65,12 @@
 - name: Setup SQLSERVER
   shell: sudo /opt/mssql/bin/mssql-conf setup
 
-- name: Ensure that the server is running
-  service:     name: “mssql-server”   state: started     enabled: yes
-  register: mssql-server_status
+#- name: Ensure that the server is running
+#  service:     name: “mssql-server”   state: started     enabled: yes
+#  register: mssql-server_status
 
-- name: DEBUG
-- debug: msg="the echo was {{ mssql-server_status.stdout }}"
+#- name: DEBUG
+#- debug: msg="the echo was {{ mssql-server_status.stdout }}"
 
 - name: Copy database backup
   template: src={{ item }}.j2 dest=/var/opt/mssql/data/{{ item }}
